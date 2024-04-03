@@ -39,11 +39,13 @@ else:
     # Nếu có ít nhất một dữ liệu được đọc, tiếp tục xử lý
     # Ghép các DataFrame chứa giá cổ phiếu của các mã thành một DataFrame lớn
     prices_df = pd.concat(prices_list, axis=1)
+    prices_df.sort_index(inplace=True)
+    print(prices_df)
 
     # Tính toán lợi suất hàng năm (returns) và độ biến động (volatility)
     returns = pd.DataFrame()
-    returns['Returns'] = prices_df.pct_change(fill_method=None).mean() * 252
-    returns['Volatility'] = prices_df.pct_change(fill_method=None).std() * sqrt(252)
+    returns['Returns'] = (prices_df.pct_change(fill_method=None)/100).mean() * 252
+    returns['Volatility'] = (prices_df.pct_change(fill_method=None)/100).std() * sqrt(252)
 
     # In ra kết quả hoặc thực hiện các thao tác tiếp theo cần thiết
     print(returns)
