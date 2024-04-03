@@ -27,7 +27,7 @@ for filename in os.listdir(folder_path):
             # Đọc chỉ 252 dòng từ tệp dữ liệu
             prices = pd.read_csv(file_path, header=None, names=[ticker], nrows=252)
             # Loại bỏ các giá trị có hơn 6 chữ số
-            prices = prices[prices[ticker] < 1e6]
+            #prices = prices[prices[ticker] < 1e6]
             prices_list.append(prices)
         except Exception as e:
             print(f"Error reading file {filename}: {e}")
@@ -54,18 +54,18 @@ else:
 data = np.asarray([np.asarray(returns['Returns']),np.asarray(returns['Volatility'])]).T
 X = data
 distorsions = []
-for k in range(2, 20):
+for k in range(2, 15):
     k_means = KMeans(n_clusters=k)
     k_means.fit(X)
     distorsions.append(k_means.inertia_)
-fig = plt.figure(figsize=(15, 5))
+#fig = plt.figure(figsize=(15, 5))
 
-plt.plot(range(2, 20), distorsions)
+plt.plot(range(2, 15), distorsions)
 plt.grid(True)
 plt.title('Elbow curve')
 plt.show()
 # Computing K-Means with K = 4 (4 clusters)
-centroids,_ = kmeans(data,5)
+centroids,_ = kmeans(data,3)
 
 # Assign each sample to a cluster
 idx,_ = vq(data,centroids)
