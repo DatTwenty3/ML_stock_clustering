@@ -102,6 +102,11 @@ else:
     # Thực hiện gom cụm sử dụng dữ liệu returns
     X = returns.values
 
+fig = plt.figure(0)
+plt.grid(True)
+plt.scatter(X[:,0],X[:,1])
+plt.show()
+
 # Format the data as a numpy array to feed into the K-Means algorithm
 data = np.asarray([np.asarray(returns['Returns']),np.asarray(returns['Volatility'])]).T
 x = data
@@ -148,4 +153,5 @@ plt.scatter(X[:,0],X[:,1],c = pred)
 for i in clusters:
     center = clusters[i]['center']
     plt.scatter(center[0],center[1],marker = '^',c = 'red')
+plt.grid(True)
 plt.show()
