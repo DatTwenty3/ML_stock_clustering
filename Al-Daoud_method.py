@@ -71,7 +71,63 @@ def select_initial_centers(X, k):
     return centers
 
 # Sử dụng hàm select_initial_centers để chọn các centroid ban đầu
-centers = select_initial_centers(prices_df, k)
+#centers = select_initial_centers(prices_df, k)
+
+def al_daoud_clustering(data, k):
+    """
+    Hàm thực hiện thuật toán phân cụm của M. B. Al-Daoud (2005)
+
+    Tham số:
+      data: Mảng NumPy chứa dữ liệu cần phân cụm (mỗi hàng là một điểm dữ liệu)
+      k: Số lượng cụm mong muốn
+
+    Trả về:
+      Mảng NumPy chứa nhãn cụm cho mỗi điểm dữ liệu
+    """
+
+    # Bước 1: Tính phương sai của mỗi thuộc tính
+    cvmax = data.var().idxmax()
+
+    # Bước 2: Tìm thuộc tính có phương sai lớn nhất và sắp xếp dữ liệu theo thuộc tính này
+    #cvmax_index = np.argmax(variances)
+    #sorted_data = data[np.lexsort((-data[:, cvmax_index],))]
+
+    print("==cvmax:" + cvmax)
+
+    # Bước 3: Chia dữ liệu thành k tập con
+    data.sort_values(by=cvmax)
+    data_chunks = np.array_split(data[cvmax], k, axis=0)
+    #print("==data_chunks:")
+    #print(data_chunks)
 
 
+    # Bước 4: Tìm giá trị trung vị của mỗi tập con
+    mediansArr = []
+    for i in range(k):
+        print(f"medians Cụm {i + 1}:")
+        medians = np.median(data_chunks[i], axis=0)
+        print(medians)
+        mediansArr.append(medians)
+
+
+    # Bước 5: Sử dụng giá trị trung vị làm centroid ban đầu
+    centroids = []
+    for i in range(k):
+        value = mediansArr[i]
+        row = prices_df.loc[abs(prices_df[cvmax] - value) < 100]
+        centroids.append(row)
+        #print("median row")
+        print(value)
+        print(row)
+
+    return 1
+
+# Ví dụ sử dụng
+
+k = 3
+
+cluster_labels = al_daoud_clustering(prices_df, k)
+
+print("Nhãn cụm:")
+print(cluster_labels)
 
