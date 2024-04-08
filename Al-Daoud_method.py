@@ -28,7 +28,7 @@ for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
         try:
             # Đọc chỉ 252 dòng từ tệp dữ liệu
-            prices = pd.read_csv(file_path, header=None, names=[ticker], nrows=1000)
+            prices = pd.read_csv(file_path, header=None, names=[ticker], nrows=200)
             # Loại bỏ các giá trị có hơn 6 chữ số
             #prices = prices[prices[ticker] < 1e6]
             prices_list.append(prices)
@@ -73,6 +73,18 @@ def select_initial_centers(X, k):
 # Sử dụng hàm select_initial_centers để chọn các centroid ban đầu
 #centers = select_initial_centers(prices_df, k)
 
+
+def find_min_row(data, cvmax, mean):
+
+    min = 100000
+
+    for index, row in data.iterrows():
+        if abs(row[cvmax] - mean) < min:
+            result = row.to_numpy()
+    print("result")
+    print(result)
+    return result
+
 def al_daoud_clustering(data, k):
     """
     Hàm thực hiện thuật toán phân cụm của M. B. Al-Daoud (2005)
@@ -111,23 +123,65 @@ def al_daoud_clustering(data, k):
 
 
     # Bước 5: Sử dụng giá trị trung vị làm centroid ban đầu
-    centroids = []
+    l_centroids = []
     for i in range(k):
-        value = mediansArr[i]
-        row = prices_df.loc[abs(prices_df[cvmax] - value) < 100]
-        centroids.append(row)
-        #print("median row")
-        print(value)
-        print(row)
+        median = mediansArr[i]
+        row = find_min_row(prices_df, cvmax, median)
+        l_centroids.append(row)
 
-    return 1
+        #print("median row")
+
+    print(f"centroids len: {l_centroids.__len__()}")
+    print(l_centroids)
+    return l_centroids
 
 # Ví dụ sử dụng
 
 k = 3
 
-cluster_labels = al_daoud_clustering(prices_df, k)
+centroids = al_daoud_clustering(prices_df, k)
 
 print("Nhãn cụm:")
-print(cluster_labels)
+print(centroids)
 
+
+
+model = KMeans(n_clusters=k, init=centroids, n_init=1)
+
+# Phân cụm dữ liệu
+model.fit(prices_df)
+labels = model.labels_
+
+print("==label")
+print(model.labels_)
+
+# Separate data points by cluster labels
+data_clustered = []
+for i in range(k):
+    v_row = prices_df[labels == i].to_numpy()
+    data_clustered.append(v_row)
+
+print(centroids)
+copied_centroids = np.copy(centroids)
+#copied_cluster = np.copy(data_clustered)
+
+# Create the plot
+plt.figure(figsize=(8, 6))
+
+#Plot the data points with different colors based on their cluster labels
+for i in range(k):
+    plt.scatter(data_clustered[i][:, 0], data_clustered[i][:, 1], label=f"Cluster {i+1}")
+
+plt.scatter(copied_centroids[:, 0], copied_centroids[:, 1], marker='x', s=100, c='black', label='Centroids')
+
+# Add labels and title
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.title('K-Means Clustering Results (k = 3)')
+
+# Add legend
+plt.legend()
+
+# Show the plot
+plt.grid(True)
+plt.show()
