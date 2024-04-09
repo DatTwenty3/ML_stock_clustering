@@ -88,16 +88,7 @@ def find_min_row(fm_data, cvmax, mean):
     return result
 
 def find_centroid_by_al_daoud_method(data, k):
-    """
-    Hàm thực hiện thuật toán phân cụm của M. B. Al-Daoud (2005)
-
-    Tham số:
-      data: Mảng NumPy chứa dữ liệu cần phân cụm (mỗi hàng là một điểm dữ liệu)
-      k: Số lượng cụm mong muốn
-
-    Trả về:
-      Mảng NumPy chứa nhãn cụm cho mỗi điểm dữ liệu
-    """
+    
 
     # Bước 1: Tính phương sai của mỗi thuộc tính
     cvmax = data.var().idxmax()
