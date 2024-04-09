@@ -145,20 +145,20 @@ centroids = al_daoud_clustering(prices_df, k)
 
 
 
-model = KMeans(n_clusters=k, init=centroids, n_init=1)
+#model = KMeans(n_clusters=k, init=centroids, n_init=1)
 
 # Phân cụm dữ liệu
-model.fit(prices_df)
-labels = model.labels_
+#model.fit(prices_df)
+#labels = model.labels_
 
-print("==label")
-print(model.labels_)
+#print("==label")
+#print(model.labels_)
 
 # Separate data points by cluster labels
-data_clustered = []
-for i in range(k):
-    v_row = prices_df[labels == i].to_numpy()
-    data_clustered.append(v_row)
+#data_clustered = []
+#for i in range(k):
+#    v_row = prices_df[labels == i].to_numpy()
+#    data_clustered.append(v_row)
 
 #print(centroids)
 copied_centroids = np.copy(centroids)
@@ -166,20 +166,16 @@ copied_centroids = np.copy(centroids)
 # Create the plot
 plt.figure(figsize=(8, 6))
 
-#Plot the data points with different colors based on their cluster labels
-for i in range(k):
-    plt.scatter(data_clustered[i][:, 0], data_clustered[i][:, 1], label=f"Cluster {i+1}")
+data = np.array(prices_df)
 
-plt.scatter(copied_centroids[:, 0], copied_centroids[:, 1], marker='x', s=100, c='black', label='Centroids')
+distorsions = []
+for k in range(2, 15):
+    k_means = KMeans(n_clusters=k)
+    k_means.fit(data)
+    distorsions.append(k_means.inertia_)
+#fig = plt.figure(figsize=(15, 5))
 
-# Add labels and title
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('K-Means Clustering Results (k = 3)')
-
-# Add legend
-plt.legend()
-
-# Show the plot
+plt.plot(range(2, 15), distorsions)
 plt.grid(True)
+plt.title('Elbow curve')
 plt.show()
