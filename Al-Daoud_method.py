@@ -141,26 +141,10 @@ k = 3
 
 centroids = al_daoud_clustering(prices_df, k)
 
-#print(centroids)
+print("===centroids===")
+print(centroids)
 
 
-
-#model = KMeans(n_clusters=k, init=centroids, n_init=1)
-
-# Phân cụm dữ liệu
-#model.fit(prices_df)
-#labels = model.labels_
-
-#print("==label")
-#print(model.labels_)
-
-# Separate data points by cluster labels
-#data_clustered = []
-#for i in range(k):
-#    v_row = prices_df[labels == i].to_numpy()
-#    data_clustered.append(v_row)
-
-#print(centroids)
 copied_centroids = np.copy(centroids)
 
 # Create the plot
