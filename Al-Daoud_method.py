@@ -81,8 +81,8 @@ def find_min_row(data, cvmax, mean):
     for index, row in data.iterrows():
         if abs(row[cvmax] - mean) < min:
             result = row.to_numpy()
-    print("result")
-    print(result)
+    #print("result")
+    #print(result)
     return result
 
 def al_daoud_clustering(data, k):
@@ -132,7 +132,7 @@ def al_daoud_clustering(data, k):
         #print("median row")
 
     print(f"centroids len: {l_centroids.__len__()}")
-    print(l_centroids)
+    #print(l_centroids)
     return l_centroids
 
 # Ví dụ sử dụng
@@ -141,8 +141,7 @@ k = 3
 
 centroids = al_daoud_clustering(prices_df, k)
 
-print("Nhãn cụm:")
-print(centroids)
+#print(centroids)
 
 
 
@@ -161,9 +160,8 @@ for i in range(k):
     v_row = prices_df[labels == i].to_numpy()
     data_clustered.append(v_row)
 
-print(centroids)
+#print(centroids)
 copied_centroids = np.copy(centroids)
-#copied_cluster = np.copy(data_clustered)
 
 # Create the plot
 plt.figure(figsize=(8, 6))
