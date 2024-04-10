@@ -143,6 +143,8 @@ plt.grid(True)
 for i in clusters:
     center = clusters[i]['center']
     plt.scatter(center[0], center[1], marker='*', c='red')
+plt.xlabel('Returns')
+plt.ylabel('Volatility')
 plt.show()
 
 clusters = assign_clusters(X,clusters)
