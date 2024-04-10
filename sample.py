@@ -1,15 +1,9 @@
 import os
 import numpy as np
 import pandas as pd
-from pylab import plot,show
 from matplotlib import pyplot as plt
-import plotly.express as px
-from numpy.random import rand
-from scipy.cluster.vq import kmeans,vq
 from math import sqrt
 from sklearn.cluster import KMeans
-from sklearn import preprocessing
-from sklearn.decomposition import PCA
 
 #Tạo các Centroid theo phương random
 k  = 3
@@ -102,9 +96,13 @@ else:
     # Thực hiện gom cụm sử dụng dữ liệu returns
     X = returns.values
 
+print(X)
+
 fig = plt.figure(0)
 plt.grid(True)
 plt.scatter(X[:,0],X[:,1])
+plt.xlabel('Returns')
+plt.ylabel('Volatility')
 plt.show()
 
 # Format the data as a numpy array to feed into the K-Means algorithm
@@ -118,6 +116,8 @@ for n in range(2, 15):
 #fig = plt.figure(figsize=(15, 5))
 plt.plot(range(2, 15), distorsions)
 plt.grid(True)
+plt.xlabel('Number of clusters')
+plt.ylabel('Distortion')
 plt.title('Elbow curve')
 plt.show()
 
@@ -149,9 +149,27 @@ clusters = assign_clusters(X,clusters)
 clusters = update_clusters(X,clusters)
 pred = pred_cluster(X,clusters)
 
+# Gán nhãn cụm cho mỗi quan sát trong tập dữ liệu ban đầu
+returns['Cluster'] = pred
+
+# Tạo một cấu trúc dữ liệu để lưu trữ mã cổ phiếu cho mỗi cụm
+clusters_stocks = {i: [] for i in range(k)}
+
+# Lặp qua từng quan sát và thêm mã cổ phiếu vào cụm tương ứng
+for idx, row in returns.iterrows():
+    cluster = row['Cluster']
+    ticker = row.name
+    clusters_stocks[cluster].append(ticker)
+
+# In ra các mã cổ phiếu thuộc mỗi cụm
+for cluster, stocks in clusters_stocks.items():
+    print(f"Cluster {cluster + 1}: {', '.join(stocks)}")
+
 plt.scatter(X[:,0],X[:,1],c = pred)
 for i in clusters:
     center = clusters[i]['center']
     plt.scatter(center[0],center[1],marker = '^',c = 'red')
+plt.xlabel('Returns')
+plt.ylabel('Volatility')
 plt.grid(True)
 plt.show()
