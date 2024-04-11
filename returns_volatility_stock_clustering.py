@@ -73,7 +73,7 @@ for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
         try:
             # Đọc chỉ 252 dòng từ tệp dữ liệu
-            prices = pd.read_csv(file_path, header=None, names=[ticker], nrows=252)
+            prices = pd.read_csv(file_path, header=None, names=[ticker])#, nrows=252)
             # Loại bỏ các giá trị có hơn 6 chữ số
             #prices = prices[prices[ticker] < 1e6]
             prices_list.append(prices)
@@ -89,20 +89,30 @@ else:
     prices_df = pd.concat(prices_list, axis=1)
     prices_df.sort_index(inplace=True)
     print(prices_df)
+    print("Returns:\n")
+    print((prices_df.pct_change(fill_method=None)).mean())
+    print("Volatility:\n")
+    print((prices_df.pct_change(fill_method=None)).std())
     # Tính toán lợi suất hàng năm (returns) và độ biến động (volatility)
     returns = pd.DataFrame()
-    returns['Returns'] = (prices_df.pct_change(fill_method=None)/100).mean() * 252
-    returns['Volatility'] = (prices_df.pct_change(fill_method=None)/100).std() * sqrt(252)
+    returns['Returns'] = (prices_df.pct_change(fill_method=None)).mean() #* 252
+    returns['Volatility'] = (prices_df.pct_change(fill_method=None)).std() #* sqrt(252)
     # Thực hiện gom cụm sử dụng dữ liệu returns
     X = returns.values
 
-print(X)
+fig = plt.figure(figsize=(10, 6))  # Tạo một hình với kích thước 10x6
 
-fig = plt.figure(0)
+# Vẽ điểm dữ liệu
+plt.scatter(X[:, 0], X[:, 1])
+
+# In tên của từng mã cổ phiếu tương ứng
+for i, ticker in enumerate(returns.index):
+    plt.text(X[i, 0], X[i, 1], ticker, fontsize=8, ha='right', va='bottom')
+
+plt.xlabel('Lợi suất hàng năm')
+plt.ylabel('Độ biến động')
+plt.title('Biểu đồ "Lợi suất hằng năm" và "Độ biến động" của các mã cổ phiếu')
 plt.grid(True)
-plt.scatter(X[:,0],X[:,1])
-plt.xlabel('Returns')
-plt.ylabel('Volatility')
 plt.show()
 
 # Format the data as a numpy array to feed into the K-Means algorithm
@@ -116,9 +126,9 @@ for n in range(2, 15):
 #fig = plt.figure(figsize=(15, 5))
 plt.plot(range(2, 15), distorsions)
 plt.grid(True)
-plt.xlabel('Number of clusters')
-plt.ylabel('Distortion')
-plt.title('Elbow curve')
+plt.xlabel('Số lượng các cụm')
+plt.ylabel('Độ biến dạng')
+plt.title('Đường cong Elbow')
 plt.show()
 
 # Sử dụng hàm select_initial_centers để chọn các centroid ban đầu
@@ -138,13 +148,17 @@ print("Initial Centroids:")
 for idx, center in enumerate(centers):
     print(f"Centroid {idx+1}: {center}")
 
+# In tên của từng mã cổ phiếu tương ứng
+for i, ticker in enumerate(returns.index):
+    plt.text(X[i, 0], X[i, 1], ticker, fontsize=8, ha='right', va='bottom')
 plt.scatter(X[:, 0], X[:, 1])
 plt.grid(True)
 for i in clusters:
     center = clusters[i]['center']
     plt.scatter(center[0], center[1], marker='*', c='red')
-plt.xlabel('Returns')
-plt.ylabel('Volatility')
+plt.xlabel('Lợi suất hàng năm')
+plt.ylabel('Độ biến động')
+plt.title('Biểu đồ thể hiện các điểm trọng tâm được  ngẫu nhiên ban đầu')
 plt.show()
 
 clusters = assign_clusters(X,clusters)
@@ -167,11 +181,23 @@ for idx, row in returns.iterrows():
 for cluster, stocks in clusters_stocks.items():
     print(f"Cluster {cluster + 1}: {', '.join(stocks)}")
 
-plt.scatter(X[:,0],X[:,1],c = pred)
-for i in clusters:
-    center = clusters[i]['center']
-    plt.scatter(center[0],center[1],marker = '^',c = 'red')
-plt.xlabel('Returns')
-plt.ylabel('Volatility')
+# Tạo danh sách các ký hiệu để đại diện cho trung tâm của mỗi cụm
+symbols = ['^', 's', 'D', 'x', '*', '+', 'p', 'h']
+
+# In các mã cổ phiếu trong cụm tương ứng, màu của cụm và kí hiệu trung tâm
+plt.figure(figsize=(10, 6))
+for i, cluster_id in enumerate(clusters):
+    center = clusters[cluster_id]['center']
+    symbol = symbols[i % len(symbols)]  # Chọn ký hiệu từ danh sách
+    plt.scatter(center[0], center[1], marker=symbol, c='red', label=f'Điểm trọng tâm của cụm {cluster_id + 1}')  # Trung tâm cụm
+    # In các mã cổ phiếu trong cụm tương ứng
+    for ticker in clusters_stocks[cluster_id]:
+        point = returns.loc[ticker, ['Returns', 'Volatility']].values
+        plt.text(point[0], point[1], ticker, fontsize=8)  # In tên mã cổ phiếu
+plt.scatter(X[:, 0], X[:, 1], c=pred, alpha=0.5)  # Điểm dữ liệu với màu là cụm dự đoán
+plt.xlabel('Lợi suất hàng năm')
+plt.ylabel('Độ biến động')
+plt.title('Biểu đồ thể hiện các mã cổ phiếu được phân cụm theo "Lợi suất hàng năm" và "Độ biến động" của các mã cổ phiếu')
+plt.legend()
 plt.grid(True)
 plt.show()
