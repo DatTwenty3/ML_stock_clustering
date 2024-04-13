@@ -6,7 +6,7 @@ from math import sqrt
 from sklearn.cluster import KMeans
 
 #Tạo các Centroid theo phương random
-k  = 3
+k  = 4
 def select_initial_centers(X, k):
     centers = []
     centers.append(X[np.random.choice(X.shape[0])])
@@ -114,6 +114,10 @@ plt.ylabel('Độ biến động')
 plt.title('Biểu đồ "Lợi suất hằng năm" và "Độ biến động" của các mã cổ phiếu')
 plt.grid(True)
 plt.show()
+
+# Loại bỏ mã cổ phiếu RX và BXP từ ma trận X và returns
+X = X[~np.isin(returns.index, ['RX', 'BXP'])]
+returns = returns[~returns.index.isin(['RX', 'BXP'])]
 
 # Format the data as a numpy array to feed into the K-Means algorithm
 data = np.asarray([np.asarray(returns['Returns']),np.asarray(returns['Volatility'])]).T
