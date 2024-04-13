@@ -97,7 +97,7 @@ def find_centroid_by_al_daoud_method(data, k):
     #cvmax_index = np.argmax(variances)
     #sorted_data = data[np.lexsort((-data[:, cvmax_index],))]
 
-    print(f"[số cụm k={k}]  cvmax:{cvmax}")
+    print(f"[số cụm k={k}]. Thuộc tính có phương sai lớn nhất,  cvmax:{cvmax}")
 
     # Bước 3: Chia dữ liệu thành k tập con
     data.sort_values(by = cvmax)
