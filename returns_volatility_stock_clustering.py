@@ -115,6 +115,23 @@ plt.title('Biểu đồ "Lợi suất hằng năm" và "Độ biến động" c�
 plt.grid(True)
 plt.show()
 
+# Format the data as a numpy array to feed into the K-Means algorithm
+data = np.asarray([np.asarray(returns['Returns']),np.asarray(returns['Volatility'])]).T
+x = data
+distorsions = []
+for n in range(2, 15):
+    k_means = KMeans(n_clusters = n)
+    k_means.fit(x)
+    distorsions.append(k_means.inertia_)
+#fig = plt.figure(figsize=(15, 5))
+plt.plot(range(2, 15), distorsions)
+plt.grid(True)
+plt.xlabel('Số lượng các cụm')
+plt.ylabel('Độ biến dạng')
+plt.title('Đường cong Elbow trước khi loại bỏ mã cổ phiếu RX và BXP')
+plt.show()
+
+
 # Loại bỏ mã cổ phiếu RX và BXP từ ma trận X và returns
 X = X[~np.isin(returns.index, ['RX', 'BXP'])]
 returns = returns[~returns.index.isin(['RX', 'BXP'])]
@@ -132,7 +149,7 @@ plt.plot(range(2, 15), distorsions)
 plt.grid(True)
 plt.xlabel('Số lượng các cụm')
 plt.ylabel('Độ biến dạng')
-plt.title('Đường cong Elbow')
+plt.title('Đường cong Elbow sau khi loại bỏ mã cổ phiếu RX và BXP')
 plt.show()
 
 # Sử dụng hàm select_initial_centers để chọn các centroid ban đầu
