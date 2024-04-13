@@ -62,7 +62,7 @@ k  = 3
 #centers = select_initial_centers(prices_df, k)
 
 
-def find_min_row(fm_data, cvmax, mean):
+def find_nearest_row_by_median(fm_data, cvmax, mean):
 
     if fm_data is None :
         print("==data is None")
@@ -88,7 +88,7 @@ def find_min_row(fm_data, cvmax, mean):
     return result
 
 def find_centroid_by_al_daoud_method(data, k):
-    
+
 
     # Bước 1: Tính phương sai của mỗi thuộc tính
     cvmax = data.var().idxmax()
@@ -119,7 +119,7 @@ def find_centroid_by_al_daoud_method(data, k):
     l_centroids = []
     for i in range(k):
         median = mediansArr[i]
-        row = find_min_row(prices_df, cvmax, median)
+        row = find_nearest_row_by_median(prices_df, cvmax, median)
         l_centroids.append(row)
 
         #print("median row")
