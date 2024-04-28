@@ -8,8 +8,10 @@ from numpy.random import rand
 from scipy.cluster.vq import kmeans,vq
 from math import sqrt
 from sklearn.cluster import KMeans
-from sklearn import preprocessing
-from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score
+from sklearn.metrics import calinski_harabasz_score
+from sklearn.metrics import davies_bouldin_score
+
 
 # Đường dẫn đến thư mục chứa các tệp dữ liệu cổ phiếu
 folder_path = "Stock_for_clustering(S&P500)"
@@ -155,12 +157,88 @@ for k in range(2, 15):
     centroids = find_centroid_by_al_daoud_method(prices_df, k)
     copied_centroids = np.copy(centroids)
     k_means = KMeans(n_clusters=k, init = centroids)
-
     k_means.fit(data)
+
+
     distorsions.append(k_means.inertia_)
 #fig = plt.figure(figsize=(15, 5))
 
 plt.plot(range(2, 15), distorsions)
 plt.grid(True)
 plt.title('Elbow curve')
+
+
+
+# Perform KMeans clustering and calculate silhouette score for each number of clusters
+print("====================================================================================")
+print("Perform KMeans clustering and calculate silhouette score for each number of clusters")
+print("====================================================================================")
+silhouette_scores = []
+for k in range(2, 15):
+
+    centroids = find_centroid_by_al_daoud_method(prices_df, k)
+    copied_centroids = np.copy(centroids)
+    k_means = KMeans(n_clusters=k, init = centroids)
+    cluster_labels = k_means.fit_predict(data)
+    silhouette_score_val = silhouette_score(data, cluster_labels)
+    silhouette_scores.append(silhouette_score_val)
+
+
+
+# Find the number of clusters with the highest silhouette score
+best_k = range(2, 15)[silhouette_scores.index(max(silhouette_scores))]
+
+# Print the silhouette score for the best number of clusters
+print("Highest Silhouette Score:", max(silhouette_scores))
+print("Silhouette Optimal Number of Clusters (k):", best_k)
+
+# Perform KMeans clustering and calculate Calinski-Harabasz score for each number of clusters
+print("====================================================================================")
+print("Perform KMeans clustering and calculate Calinski-Harabasz score for each number of clusters")
+print("====================================================================================")
+calinski_harabasz_scores = []
+for k in range(2, 15):
+
+    centroids = find_centroid_by_al_daoud_method(prices_df, k)
+    copied_centroids = np.copy(centroids)
+    k_means = KMeans(n_clusters=k, init = centroids)
+    cluster_labels = k_means.fit_predict(data)
+    calinski_harabasz_score_val = calinski_harabasz_score(data, cluster_labels)
+    calinski_harabasz_scores.append(calinski_harabasz_score_val)
+
+
+
+# Find the number of clusters with the highest silhouette score
+best_k = range(2, 15)[calinski_harabasz_scores.index(max(calinski_harabasz_scores))]
+
+# Print the silhouette score for the best number of clusters
+print("Highest Calinski-Harabasz Score:", max(calinski_harabasz_scores))
+print("Calinski-Harabasz Optimal Number of Clusters (k):", best_k)
+
+
+
+# Perform KMeans clustering and calculate Davies-Bouldin score for each number of clusters
+print("====================================================================================")
+print("Perform KMeans clustering and calculate Davies-Bouldin score for each number of clusters")
+print("====================================================================================")
+davies_bouldin_scores = []
+for k in range(2, 15):
+
+    centroids = find_centroid_by_al_daoud_method(prices_df, k)
+    copied_centroids = np.copy(centroids)
+    k_means = KMeans(n_clusters=k, init = centroids)
+    cluster_labels = k_means.fit_predict(data)
+    davies_bouldin_score_val = davies_bouldin_score(data, cluster_labels)
+    davies_bouldin_scores.append(davies_bouldin_score_val)
+
+
+
+# Find the number of clusters with the highest silhouette score
+best_k = range(2, 15)[davies_bouldin_scores.index(max(davies_bouldin_scores))]
+
+# Print the silhouette score for the best number of clusters
+print("Davies-Bouldin Highest Score:", max(davies_bouldin_scores))
+print("Davies-Bouldin Optimal Number of Clusters (k):", best_k)
+
+
 plt.show()
